@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Melissa's Capital Call App: Home Page</title>
+    </head>
+    <body>
+        {% if L_Funds %}
+            <ul>
+                {% for fund in L_Funds %}
+                    <li>{{ str(fund) }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No funds exist yet.</p>
+        {% endif %}
+    </body>
+</html>
