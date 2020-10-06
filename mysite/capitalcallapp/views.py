@@ -48,6 +48,12 @@ def newInvestment(request):
         )
     dv = 0
 
+    # Now we create a new instance of Investment, and the __innit__ function of the Investment class must call up all
+    # available commitments
+
+    # TODO: This code currently assumes that all of the money proveded by all commitments remains available.  IE is
+    # does not take into account existing calls that will soon be added to the DB!!!
+
 
     return HttpResponse("Hello, world. You hit the New Investment end point!")
 

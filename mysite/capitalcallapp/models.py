@@ -23,10 +23,16 @@ class Fund(models.Model):
             commitment for commitment in Commitment.objects.filter(fund=self)
         ]
         self.L_Commitments_To_This_Fund.sort(key=lambda commitment: commitment.date)
+
+        # TODO: This code currently assumes that all of the money provided by all commitments remains available.  IE is
+        # does not take into account existing calls that will soon be added to the DB!!!
         L_Commitment_Amounts_Usd_f: List[float] = [
             commitment.amount_usd for commitment in self.L_Commitments_To_This_Fund
         ]
+        # TODO: This code currently assumes that all of the money provided by all commitments remains available.  IE is
+        # does not take into account existing calls that will soon be added to the DB!!!
         self.f_current_balance_usd: float  = self.initial_balance + sum(L_Commitment_Amounts_Usd_f)
+
         return
 
     def getDictionaryRepresentation(self):
