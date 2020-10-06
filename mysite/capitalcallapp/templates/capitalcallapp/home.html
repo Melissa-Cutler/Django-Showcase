@@ -3,11 +3,13 @@
     <head>
         <meta charset="UTF-8">
         <title>Melissa's Capital Call App: Home Page</title>
-        <link rel="stylesheet" type="text/css" href="./flexboxes.css">
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static "capitalcallapp/flexboxes.css" %}">
     </head>
     <body>
         <div class="header">Melissa's Capital Call App: Home Page</div>
-        <div class="main">
+        <div class="funds-summary">
+            <p>Summary of Funds</p>
             {% if L_Funds %}
                 <ul>
                     {% for D_Fund in L_Funds %}
@@ -17,6 +19,7 @@
             {% else %}
                 <p>No funds exist yet.</p>
             {% endif %}
+            <p>Total available to invest: $ {{ f_total_available_usd }}</p>
         </div>
         <div class="footer">Melissa's Capital Call App: Home Page</div>
     </body>
