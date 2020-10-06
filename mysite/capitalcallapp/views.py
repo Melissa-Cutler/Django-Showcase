@@ -14,7 +14,6 @@ from typing  import List, Dict
 def index(request):
     Query_Set_All_Funds = Fund.objects.order_by('fund_number')[:]
     L_Funds: List[Dict] = [ fund.getDictionaryRepresentation() for fund in Query_Set_All_Funds ]
-    dv = 0
     f_total_available_usd = sum([ D_Fund["f_current_balance_usd"] for D_Fund in L_Funds ])
     template = loader.get_template('capitalcallapp/home.html')
     context = {
@@ -22,5 +21,10 @@ def index(request):
         "f_total_available_usd": f_total_available_usd
     }
     return HttpResponse(template.render(context, request))
+
+
+def newInvestment(request):
+    dv = 0
+    return HttpResponse("Hello, world. You hit the New Investment end point!")
 
 

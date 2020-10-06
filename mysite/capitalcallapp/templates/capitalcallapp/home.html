@@ -21,6 +21,31 @@
             {% endif %}
             <p>Total available to invest: $ {{ f_total_available_usd }}</p>
         </div>
+        <div class="new-investment">
+            <p>New Investment</p>
+
+
+            <form action="{% url 'capitalcallapp:new-investment' %}" method="post">
+                {% csrf_token %}
+                <label for="new-investment-amount">amount to invest (USD): </label>
+                <input type="number" id="new-investment-amount" name="new-investment-amount" min="0" max="{{ f_total_available_usd }}" value="{{ f_total_available_usd }}">
+                <br>
+                <label for="new-investment-date">date of new investment: </label>
+                <input type="date"   id="new-investment-date"   name="new-investment-amount" value="2020-10-06">
+                <br>
+
+
+<!--
+                {% for choice in question.choice_set.all %}
+                    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+                    <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+                {% endfor %}
+-->
+                <input type="submit" value="Create Investment">
+            </form>
+
+
+        </div>
         <div class="footer">Melissa's Capital Call App: Home Page</div>
     </body>
 </html>
