@@ -33,7 +33,7 @@ class Fund(models.Model):
         D_Output = {
             "s_name"               : "fund" + str(self.fund_number),
             "f_current_balance_usd": self.f_current_balance_usd
-            # "L_Commitments"        : []
+            # "L_Commitment_Dictss" : []
         }
         return D_Output
 
@@ -42,6 +42,8 @@ class Fund(models.Model):
 
     def __repr__(self) -> str:
         return "< fund" + str(self.fund_number) + ": $" + str(self.f_current_balance_usd) + ">"
+
+# ass Fund(models.Model)
 
 
 # A class to describe commitments to funds
