@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from django.http      import HttpResponse
 from django.template  import loader
-from .models          import Fund
+from django.http      import HttpResponse
+from .models import Fund, Commitment
+from typing  import List, Dict
 
 
 # Create your views here.
@@ -11,8 +12,10 @@ from .models          import Fund
 #     return HttpResponse("Hello, world. You're at the capitalcallapp index.")
 
 def index(request):
-    L_Funds = Fund.objects.order_by('-pub_date')[:5]
-    template = loader.get_template('polls/index.html')
+    Query_Set_All_Funds = Fund.objects.order_by('fund_number')[:]
+    L_Funds: List[Dict] = [ fund.getDictionaryRepresentation() for fund in Query_Set_All_Funds ]
+    dv = 0
+    template = loader.get_template('capitalcallapp/home.html')
     context = {
         'L_Funds': L_Funds,
     }

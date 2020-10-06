@@ -3,16 +3,21 @@
     <head>
         <meta charset="UTF-8">
         <title>Melissa's Capital Call App: Home Page</title>
+        <link rel="stylesheet" type="text/css" href="./flexboxes.css">
     </head>
     <body>
-        {% if L_Funds %}
-            <ul>
-                {% for fund in L_Funds %}
-                    <li>{{ str(fund) }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>No funds exist yet.</p>
-        {% endif %}
+        <div class="header">Melissa's Capital Call App: Home Page</div>
+        <div class="main">
+            {% if L_Funds %}
+                <ul>
+                    {% for D_Fund in L_Funds %}
+                        <li>{{ D_Fund.s_name }}: $ {{ D_Fund.f_current_balance_usd }} </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No funds exist yet.</p>
+            {% endif %}
+        </div>
+        <div class="footer">Melissa's Capital Call App: Home Page</div>
     </body>
 </html>
