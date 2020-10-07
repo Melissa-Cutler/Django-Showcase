@@ -1,9 +1,9 @@
-from django.forms import forms
 from django.shortcuts import render
 from django.template  import loader
+from django.forms     import forms
 from django.http      import HttpResponse
 from datetime import datetime
-from .models  import Fund, Commitment
+from .models  import Fund, Commitment, Investment
 from typing   import List, Dict
 import pytz
 
@@ -46,6 +46,8 @@ def newInvestment(request):
         raise forms.ValidationError(
             "Time travel is strictly forbidden! You cannot add an to investment prior to the most recent commitment!"
         )
+    investment_new = Investment.createWithCalls(f_new_investment_amount_usd, Dt_New_Investment_Date)
+
     dv = 0
 
     # Now we create a new instance of Investment, and the __innit__ function of the Investment class must call up all
@@ -55,6 +57,6 @@ def newInvestment(request):
     # does not take into account existing calls that will soon be added to the DB!!!
 
 
-    return HttpResponse("Hello, world. You hit the New Investment end point!")
+    return HttpResponse("New investment and calls created!")
 
 
