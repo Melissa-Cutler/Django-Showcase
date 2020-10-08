@@ -12,8 +12,8 @@
             <p>Summary of Funds</p>
             {% if L_Funds %}
                 <ul>
-                    {% for D_Fund in L_Funds %}
-                        <li>{{ D_Fund.s_name }}: $ {{ D_Fund.f_current_balance_usd }} </li>
+                    {% for s_summary in L_Fund_Summary_Strings %}
+                        <li>{{ s_summary }}</li>
                     {% endfor %}
                 </ul>
             {% else %}

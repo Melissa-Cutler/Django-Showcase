@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django.db import models
-from datetime import datetime
-from typing import List, Dict
+from datetime  import datetime
+from typing    import List, Dict
 
 
 # Create your models here.
@@ -14,34 +14,37 @@ class Fund(models.Model):
     initial_balance: models.query_utils.DeferredAttribute = models.FloatField(default=0)
 
     def __init__(self, *args, **kwargs):
-        self.fund_number: int
+        self.fund_number    : int
         self.initial_balance: float
-        self.id: int
+        self.id     : int
         self.objects: str
-        self.pk: int
+        self.pk     : int
         super().__init__(*args, **kwargs)
         self.L_Commitments_To_This_Fund: List[Commitment] = [
             commitment for commitment in Commitment.objects.filter(fund=self)
         ]
         self.L_Commitments_To_This_Fund.sort(key=lambda commitment: commitment.date)
-
-        # TODO: This code currently assumes that all of the money provided by all commitments remains available.  IE is
-        # does not take into account existing calls that will soon be added to the DB!!!
         L_Commitment_Amounts_Usd_f: List[float] = [
-            commitment.amount_usd for commitment in self.L_Commitments_To_This_Fund
+            commitment.initial_amount_usd for commitment in self.L_Commitments_To_This_Fund
         ]
-        # TODO: This code currently assumes that all of the money provided by all commitments remains available.  IE is
-        # does not take into account existing calls that will soon be added to the DB!!!
-        self.f_current_balance_usd: float = self.initial_balance + sum(L_Commitment_Amounts_Usd_f)
-
+        self.f_total_committed = sum(L_Commitment_Amounts_Usd_f)
+        self.L_Calls_From_This_Fund: List[Call] = [ call for call in Call.objects.filter(fund=self) ]
+        self.L_Calls_From_This_Fund.sort(key=lambda call: call.date)
+        L_Call_Amounts_Usd_f: List[float] = [
+            call.amount_usd for call in self.L_Calls_From_This_Fund
+        ]
+        self.f_current_balance_usd: float = (
+                self.initial_balance + self.f_total_committed - sum(L_Call_Amounts_Usd_f)
+        )
         return
     # f __init__(self, *args, **kwargs)
 
     def getDictionaryRepresentation(self):
         D_Output = {
-            "s_name": "fund" + str(self.fund_number),
-            "f_current_balance_usd": self.f_current_balance_usd
-            # "L_Commitment_Dictss" : []
+            "s_name"               : "Fund" + str(self.fund_number),
+            "f_current_balance_usd": self.f_current_balance_usd,
+            "f_total_committed"    : self.f_total_committed
+            # "L_Commitment_Dicts" : []
         }
         return D_Output
     # f getDictionaryRepresentation(self)
@@ -58,15 +61,24 @@ class Fund(models.Model):
 
 # A class to describe commitments to funds
 class Commitment(models.Model):
-    # commitment_id: models.Field = models.IntegerField(default=0)
-    # fund_id      :   models.ForeignKey(Fund, on_delete=models.CASCADE)
-    commitment_number: models.Field = models.IntegerField(unique=True)
-    fund: models.ForeignObject = models.ForeignKey(Fund, on_delete=models.CASCADE)
-    date: models.query_utils.DeferredAttribute = models.DateTimeField('date of commitment')
-    amount_usd: models.Field = models.FloatField(default=0.0)
+    commitment_number : models.query_utils.DeferredAttribute = models.IntegerField(unique=True)
+    fund              : models.ForeignObject                 = models.ForeignKey(Fund, on_delete=models.CASCADE)
+    date              : models.query_utils.DeferredAttribute = models.DateTimeField('date of commitment')
+    initial_amount_usd: models.query_utils.DeferredAttribute = models.FloatField(default=0.0)
+
+    def __init__(self, *args, **kwargs):
+        self.commitment_number : int
+        self.initial_amount_usd: float
+        self.fund : Fund
+        self.date : datetime
+        super().__init__(*args, **kwargs)
+        return
+    # f __init__(self, *args, **kwargs)
+
 
     def __str__(self) -> str:
-        return "$" + str(self.amount_usd) + " to fund" + str(self.fund.fund_number) + " on " + str(self.date)
+        return "$" + str(self.initial_amount_usd) + " to fund" + str(self.fund.fund_number) + " on " + str(self.date)
+    # f __str__(self) -> str
 
 # ass Commitment(models.Model)
 
@@ -86,6 +98,7 @@ class Investment(models.Model):
             call for call in Call.objects.filter(investment=self)
         ]
         return
+    # f __init__(self, *args, **kwargs)
 
     def __str__(self) -> str:
         return "$" + str(self.amount_usd) + " on " + str(self.date)
@@ -119,7 +132,7 @@ class Investment(models.Model):
         New_Investment.save()
         for commitment in Query_Set_All_Commitments:
             # TODO: Check that this commitment has a non-zero remaining balance
-            if f_remaining_amount_needed < commitment.amount_usd:
+            if f_remaining_amount_needed < commitment.initial_amount_usd:
                 # TODO: create a call of size f_remaining_amount_needed
                 New_Call = Call()
                 dv = 0
@@ -137,13 +150,13 @@ class Investment(models.Model):
                 # TODO: create a new call of the size of the commitment
                 dv = 0
                 L_Calls.append(Call(
-                    amount_usd=commitment.amount_usd,
+                    amount_usd=commitment.initial_amount_usd,
                     fund=commitment.fund,
                     commitment=commitment,
                     investment=New_Investment,
                     date=dt_new_investment_date
                 ))
-                f_remaining_amount_needed -= commitment.amount_usd
+                f_remaining_amount_needed -= commitment.initial_amount_usd
             #
         # r commitment in Query_Set_All_Commitments
 

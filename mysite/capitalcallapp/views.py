@@ -18,10 +18,17 @@ def index(request):
     Query_Set_All_Funds = Fund.objects.order_by('fund_number')[:]
     L_Funds: List[Dict] = [ fund.getDictionaryRepresentation() for fund in Query_Set_All_Funds ]
     f_total_available_usd = sum([ D_Fund["f_current_balance_usd"] for D_Fund in L_Funds ])
+    L_Fund_Summary_Strings = [
+        "".join([
+                D_Fund["s_name"], ": $", str(D_Fund["f_total_committed"]), " committed, $",
+                str(D_Fund["f_current_balance_usd"]) + " available"
+        ]) for D_Fund in L_Funds
+    ]
     template = loader.get_template('capitalcallapp/home.html')
     context = {
-        'L_Funds'              : L_Funds,
-        "f_total_available_usd": f_total_available_usd
+        'L_Funds'               : L_Funds,
+        'L_Fund_Summary_Strings': L_Fund_Summary_Strings,
+        "f_total_available_usd" : f_total_available_usd
     }
     return HttpResponse(template.render(context, request))
 
