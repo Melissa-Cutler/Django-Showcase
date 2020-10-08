@@ -1,4 +1,4 @@
-from django.shortcuts import render
+# from django.shortcuts import render
 from django.template  import loader
 from django.forms     import forms
 from django.http      import HttpResponse
@@ -41,22 +41,25 @@ def newInvestment(request):
     Dt_New_Investment_Date = timezone.localize(Dt_New_Investment_Date)
     L_Most_Recent_Commitments: List[Commitment] = [ fund.L_Commitments_To_This_Fund[-1] for fund in L_Funds ]
     L_Most_Recent_Commitments.sort(key=lambda commitment: commitment.date)
-    dv = 0
     if Dt_New_Investment_Date < L_Most_Recent_Commitments[-1].date:
         raise forms.ValidationError(
             "Time travel is strictly forbidden! You cannot add an to investment prior to the most recent commitment!"
         )
-    investment_new = Investment.createWithCalls(f_new_investment_amount_usd, Dt_New_Investment_Date)
 
+    # TODO: This code currently assumes that all of the money provided by all commitments remains available.  IE is
+    # does not take into account existing calls that will soon be added to the DB!!!
+    investment_new = Investment.createWithCalls(f_new_investment_amount_usd, Dt_New_Investment_Date)
+    L_Call_Dicts = [ call.getDictionaryRepresentation() for call in investment_new.L_Calls_From_Commitments ]
     dv = 0
 
-    # Now we create a new instance of Investment, and the __innit__ function of the Investment class must call up all
-    # available commitments
-
-    # TODO: This code currently assumes that all of the money proveded by all commitments remains available.  IE is
-    # does not take into account existing calls that will soon be added to the DB!!!
-
-
-    return HttpResponse("New investment and calls created!")
+    template = loader.get_template('capitalcallapp/investment-created.html')
+    context = {
+        's_new_investment_name'   : "Investment" + str(investment_new.investment_number),
+        "f_total_available_usd"   : f_total_available_usd,
+        "i_num_commitments_called": len(L_Call_Dicts)    ,
+        "L_Call_Dicts"            : L_Call_Dicts
+    }
+    return HttpResponse(template.render(context, request))
+# f newInvestment(request)
 
 
