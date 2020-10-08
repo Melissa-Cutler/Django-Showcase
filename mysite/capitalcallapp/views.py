@@ -1,4 +1,4 @@
-# from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.template  import loader
 from django.forms     import forms
 from django.http      import HttpResponse
@@ -11,8 +11,16 @@ import pytz
 # Create your views here.
 
 
-# def index(request):
-#     return HttpResponse("Hello, world. You're at the capitalcallapp index.")
+def cleanDatabase(request) -> HttpResponse:
+    Query_Set_All_Funds = Fund.objects.order_by('fund_number')[:]
+    #L_Funds: List[Fund] = [ fund for fund in Query_Set_All_Funds ]
+    [ fund.delete() for fund in Query_Set_All_Funds ]
+    Query_Set_All_Investments = Investment.objects.order_by('investment_number')[:]
+    [ investment.delete() for investment in Query_Set_All_Investments ]
+    return redirect('/capitalcallapp/')
+# f newCommitment(request) -> HttpResponse
+
+
 
 def index(request) -> HttpResponse:
     Query_Set_All_Funds    = Fund.objects.order_by('fund_number')[:]
@@ -71,7 +79,7 @@ def newCommitment(request) -> HttpResponse:
         date=dt_new_commitment_date
     )
     new_commitment.save()
-    return HttpResponse("Commitment created!")
+    return redirect('/capitalcallapp/')
 # f newCommitment(request) -> HttpResponse
 
 
