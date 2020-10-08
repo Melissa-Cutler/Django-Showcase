@@ -8,6 +8,47 @@
     </head>
     <body>
         <div class="header">Melissa's Capital Call App: Home Page</div>
+        <div class="new-commitment">
+            <p>New Commitment</p>
+            <form action="{% url 'capitalcallapp:new-commitment' %}" method="post">
+                {% csrf_token %}
+                <label for="new-commitment-amount">amount being committed (USD): </label>
+                <input type="number" id="new-commitment-amount" name="new-commitment-amount" min="0" value="10000000">
+                <br>
+                <label for="new-commitment-date">date of new commitment: </label>
+                <input type="date"   id="new-commitment-date"   name="new-commitment-date" min="{{ s_min_allowed_date }}" value="2020-10-06">
+                <br>
+                <select id="fund-selection" name="fund-selection">
+                    <option value="-1">create new fund</option>
+                    {% for s_summary in L_Fund_Summary_Strings %}
+                        <option value="{{ forloop.counter }}">{{ s_summary }}</option>
+                    {% endfor %}
+                </select>
+
+
+
+
+
+
+
+
+                <!--
+                <input type="radio" name="choice" id="choice-1" value="-1">
+                <label for="choice-1">create new fund</label><br>
+
+                {% for s_summary in L_Fund_Summary_Strings %}
+                    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ forloop.counter }}">
+                    <label for="choice{{ forloop.counter }}">{{ s_summary }}</label><br>
+                {% endfor %}
+                -->
+
+
+
+
+
+                <input type="submit" value="Create Commitment">
+            </form>
+        </div>
         <div class="funds-summary">
             <p>Summary of Funds</p>
             {% if L_Funds %}
@@ -23,15 +64,13 @@
         </div>
         <div class="new-investment">
             <p>New Investment</p>
-
-
             <form action="{% url 'capitalcallapp:new-investment' %}" method="post">
                 {% csrf_token %}
                 <label for="new-investment-amount">amount to invest (USD): </label>
                 <input type="number" id="new-investment-amount" name="new-investment-amount" min="0" max="{{ f_total_available_usd }}" value="{{ f_total_available_usd }}">
                 <br>
                 <label for="new-investment-date">date of new investment: </label>
-                <input type="date"   id="new-investment-date"   name="new-investment-date" value="2020-10-06">
+                <input type="date"   id="new-investment-date"   name="new-investment-date" min="{{ s_min_allowed_date }}" value="2020-10-06">
                 <br>
 
 
@@ -43,8 +82,6 @@
 -->
                 <input type="submit" value="Create Investment">
             </form>
-
-
         </div>
         <div class="footer">Melissa's Capital Call App: Home Page</div>
     </body>

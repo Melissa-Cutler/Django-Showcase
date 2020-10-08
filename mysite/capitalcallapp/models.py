@@ -36,6 +36,7 @@ class Fund(models.Model):
         self.f_current_balance_usd: float = (
                 self.initial_balance + self.f_total_committed - sum(L_Call_Amounts_Usd_f)
         )
+        assert 0 <= self.f_current_balance_usd
         return
     # f __init__(self, *args, **kwargs)
 
@@ -54,6 +55,7 @@ class Fund(models.Model):
 
     def __repr__(self) -> str:
         return "< fund" + str(self.fund_number) + ": $" + str(self.f_current_balance_usd) + ">"
+    # f __repr__(self) -> str
 
 
 # ass Fund(models.Model)
@@ -72,6 +74,11 @@ class Commitment(models.Model):
         self.fund : Fund
         self.date : datetime
         super().__init__(*args, **kwargs)
+        self.L_Calls_From_This_Commitment: List[Call] = [call for call in Call.objects.filter(commitment=self)]
+        self.f_still_available: float = self.initial_amount_usd - sum(
+            [ call.amount_usd for call in self.L_Calls_From_This_Commitment ]
+        )
+        assert 0 <= self.f_still_available
         return
     # f __init__(self, *args, **kwargs)
 
@@ -128,15 +135,13 @@ class Investment(models.Model):
         )
         f_remaining_amount_needed = f_new_investment_amount_usd
         Query_Set_All_Commitments = Commitment.objects.order_by('date')[:]
+        L_Commitments_With_Available_Funds: List[Commitment] = [
+            commitment for commitment in Query_Set_All_Commitments if 0 < commitment.f_still_available
+        ]
         L_Calls: List[Call] = []
         New_Investment.save()
-        for commitment in Query_Set_All_Commitments:
-            # TODO: Check that this commitment has a non-zero remaining balance
-            if f_remaining_amount_needed < commitment.initial_amount_usd:
-                # TODO: create a call of size f_remaining_amount_needed
-                New_Call = Call()
-                dv = 0
-                # then exit the for loop
+        for commitment in L_Commitments_With_Available_Funds:
+            if f_remaining_amount_needed <= commitment.f_still_available:
                 L_Calls.append(Call(
                     amount_usd=f_remaining_amount_needed,
                     fund=commitment.fund,
@@ -147,22 +152,20 @@ class Investment(models.Model):
                 f_remaining_amount_needed = 0
                 break
             else:
-                # TODO: create a new call of the size of the commitment
-                dv = 0
                 L_Calls.append(Call(
-                    amount_usd=commitment.initial_amount_usd,
+                    amount_usd=commitment.f_still_available,
                     fund=commitment.fund,
                     commitment=commitment,
                     investment=New_Investment,
                     date=dt_new_investment_date
                 ))
-                f_remaining_amount_needed -= commitment.initial_amount_usd
+                f_remaining_amount_needed -= commitment.f_still_available
             #
         # r commitment in Query_Set_All_Commitments
 
         # We've now created a list of Calls that meet this investment.
-        # We should save them to the DB, save our new investment to the DV, and return our new investment to the
-        # caller views.py which must prepare the responds, reporting the answer.
+        # We should save them to the DB, and return our new investment to the
+        # caller (views.py) which must prepare the responds, reporting the answer.
         [call.save() for call in L_Calls]
         New_Investment.L_Calls_From_Commitments = L_Calls
         return New_Investment
@@ -189,7 +192,6 @@ class Call(models.Model):
         self.date      : datetime
         super().__init__(*args, **kwargs)
     # f __init__(self, *args, **kwargs)
-
 
     def __str__(self) -> str:
         return " ".join([
