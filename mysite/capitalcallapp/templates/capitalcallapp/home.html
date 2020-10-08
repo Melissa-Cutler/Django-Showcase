@@ -19,7 +19,7 @@
                 <input type="date"   id="new-commitment-date"   name="new-commitment-date" min="{{ s_min_allowed_date }}" value="2020-10-06">
                 <br>
                 <select id="fund-selection" name="fund-selection">
-                    <option value="-1">create new fund</option>
+                    <option value="0">create new fund</option>
                     {% for s_summary in L_Fund_Summary_Strings %}
                         <option value="{{ forloop.counter }}">{{ s_summary }}</option>
                     {% endfor %}

@@ -56,11 +56,11 @@ def newCommitment(request) -> HttpResponse:
     Query_Set_All_Funds = Fund.objects.order_by('fund_number')[:]
     L_Funds: List[Fund] = [ fund for fund in Query_Set_All_Funds ]
     #
-    if i_target_fund_num == -1:
+    if i_target_fund_num == 0:
         fund = Fund(fund_number=(len(L_Funds)+1))
         fund.save()
     else:
-        fund = L_Funds[i_target_fund_num]
+        fund = L_Funds[i_target_fund_num - 1]
     #  i_target_fund_num...
     Query_Set_All_Commitments = Commitment.objects.order_by("commitment_number")
     L_All_Commitments: List[Commitment] = [ commitment for commitment in Query_Set_All_Commitments ]
