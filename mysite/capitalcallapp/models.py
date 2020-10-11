@@ -63,10 +63,10 @@ class Fund(models.Model):
 
 # A class to describe commitments to funds
 class Commitment(models.Model):
-    commitment_number : models.query_utils.DeferredAttribute = models.IntegerField(unique=True)
-    fund              : models.ForeignObject                 = models.ForeignKey(Fund, on_delete=models.CASCADE)
+    commitment_number : models.query_utils.DeferredAttribute = models.IntegerField( unique=True)
+    fund              : models.ForeignObject                 = models.ForeignKey(   Fund, on_delete=models.CASCADE)
     date              : models.query_utils.DeferredAttribute = models.DateTimeField('date of commitment')
-    initial_amount_usd: models.query_utils.DeferredAttribute = models.FloatField(default=0.0)
+    initial_amount_usd: models.query_utils.DeferredAttribute = models.FloatField(   default=0.0)
 
     def __init__(self, *args, **kwargs):
         self.commitment_number : int
@@ -112,15 +112,14 @@ class Investment(models.Model):
 
     @staticmethod
     def createWithCalls(f_new_investment_amount_usd: float, dt_new_investment_date: datetime) -> "Investment":
-        L_Funds     : List[Fund]     = [fund for fund in Fund.objects.order_by('fund_number')[:]]
-        L_Fund_Dicts: List[Dict]     = [fund.getDictionaryRepresentation() for fund in L_Funds]
+        l_funds     : List[Fund]     = [fund for fund in Fund.objects.order_by('fund_number')[:]]
+        L_Fund_Dicts: List[Dict]     = [fund.getDictionaryRepresentation() for fund in l_funds]
         f_total_available_usd: float = sum([D_Fund["f_current_balance_usd"] for D_Fund in L_Fund_Dicts])
         assert f_new_investment_amount_usd <= f_total_available_usd
-        L_Most_Recent_Commitments: List[Commitment] = [fund.L_Commitments_To_This_Fund[-1] for fund in L_Funds]
+        L_Most_Recent_Commitments: List[Commitment] = [fund.L_Commitments_To_This_Fund[-1] for fund in l_funds]
         L_Most_Recent_Commitments.sort(key=lambda cmmtmnt: cmmtmnt.date)
         assert L_Most_Recent_Commitments[-1].date < dt_new_investment_date
 
-        # L_Funds: List[Fund] = [fund for fund in Fund.objects.order_by('fund_number')[:]]
 
         # number to call to close down JSA application: 0800 169 0310
 

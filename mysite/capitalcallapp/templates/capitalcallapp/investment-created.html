@@ -11,10 +11,10 @@
         <div class="investment-detail">
             <p>{{ s_new_investment_name }} has been created with capital called from {{ i_num_commitments_called }} commitments.</p>
             <ul>
-                {% for D_Call_From_Commitment in L_Call_Dicts %}
+                {% for d_call_from_commitment in l_call_dicts %}
                     <li>
-                        $ {{ D_Call_From_Commitment.f_amount_usd }} called from
-                        {{ D_Call_From_Commitment.s_commitment_name }} ({{ D_Call_From_Commitment.s_fund_name }})
+                        $ {{ d_call_from_commitment.f_amount_usd }} called from
+                        {{ d_call_from_commitment.s_commitment_name }} ({{ d_call_from_commitment.s_fund_name }})
                     </li>
                 {% endfor %}
             </ul>

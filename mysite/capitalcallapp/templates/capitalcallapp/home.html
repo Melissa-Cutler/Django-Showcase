@@ -22,7 +22,7 @@
             <form action="{% url 'capitalcallapp:new-commitment' %}" method="post">
                 {% csrf_token %}
                 <label for="new-commitment-amount">amount being committed (USD): </label>
-                <input type="number" id="new-commitment-amount" name="new-commitment-amount" min="0" value="10000000">
+                <input type="number" id="new-commitment-amount" name="new-commitment-amount" min="1" value="10000000">
                 <br>
                 <label for="new-commitment-date">date of new commitment: </label>
                 <input
@@ -43,7 +43,7 @@
         </div>
         <div class="funds-summary">
             <p>Summary of Funds</p>
-            {% if L_Funds %}
+            {% if l_funds %}
                 <ul>
                     {% for s_summary in L_Fund_Summary_Strings %}
                         <li>{{ s_summary }}</li>
@@ -63,7 +63,7 @@
                     type="number"
                     id="new-investment-amount"
                     name="new-investment-amount"
-                    min="0"
+                    min="1"
                     max="{{ f_total_available_usd }}"
                     value="{{ f_total_available_usd }}"
                 >

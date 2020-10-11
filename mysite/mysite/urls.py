@@ -20,3 +20,6 @@ urlpatterns = [
     path("capitalcallapp/", include("capitalcallapp.urls")),
     path('admin/'         , admin.site.urls               ),
 ]
+
+
+
