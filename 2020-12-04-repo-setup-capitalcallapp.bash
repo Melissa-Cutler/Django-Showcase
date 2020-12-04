@@ -60,7 +60,9 @@ python mysite/manage.py makemigrations capitalcallapp
 python mysite/manage.py migrate
 python mysite/manage.py runserver &
 python mysite/manage.py runserver
-git commit -m \"REMEMBER TO ADD A COMMIT MESSAGE!\"
+git status
+git add -A
+git commit -m \"REMEMBER TO ADD A COMMIT MESSAGE\!\"  
 git push origin master
 
 "
