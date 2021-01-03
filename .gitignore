@@ -223,7 +223,11 @@ fabric.properties
 # Melissa spesific conventions #
 ################################
 
-.Venv-**
-.Venv-*/
-
+# django
 mysite/mysite/secrets.py
+mysite/**/migrations/
+
+# virtual enviroment
+.Venv-**
+
+
